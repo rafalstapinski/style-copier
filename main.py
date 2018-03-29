@@ -22,9 +22,12 @@ def get_preferences(set_a, set_b):
 
 def get_colors(img, palette_size):
 
-    return img.convert('P',
+    colors_data = img.convert('P',
         palette = Image.ADAPTIVE,
         colors = palette_size
-    ).convert('Lab').getcolors()
+    ).convert('RGB').getcolors()
 
-img = Image.open('imgs/ponies.jpg')
+    return [x[1] for x in colors_data]
+
+img = Image.open('imgs/vik.jpg')
+print get_colors(img, 4)
