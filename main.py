@@ -27,7 +27,18 @@ def get_colors(img, palette_size):
         colors = palette_size
     ).convert('RGB').getcolors()
 
-    return [x[1] for x in colors_data]
+    colors = {}
+
+    for d in colors_data:
+
+        hex = '#%02x%02x%02x' % d[1]
+
+        colors[hex] = {
+            'location': d[1],
+            'frequency': d[0]
+        }
+
+    return colors
 
 img = Image.open('imgs/vik.jpg')
 print get_colors(img, 4)
