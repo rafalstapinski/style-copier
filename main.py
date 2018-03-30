@@ -33,7 +33,7 @@ def get_preferences(set_a, set_b):
 
     return set_a, set_b
 
-def stable_marriage(set_a, set_b):
+def stable_marriage(set_b, set_a):
 
     a_prefs = {}
     b_prefs = {}
@@ -74,9 +74,7 @@ def stable_marriage(set_a, set_b):
                 if a_prefs_2[match]:
                     a_free.append(match)
 
-            else:
-
-                if a_list:
+            elif a_list:
                     a_free.append(a)
 
     return matches
@@ -101,13 +99,41 @@ def get_colors(img, palette_size):
 
     return colors
 
+def rgb(triplet):
+    _NUMERALS = '0123456789abcdefABCDEF'
+    _HEXDEC = {v: int(v, 16) for v in (x+y for x in _NUMERALS for y in _NUMERALS)}
+    return _HEXDEC[triplet[1:3]], _HEXDEC[triplet[3:5]], _HEXDEC[triplet[5:7]]
+
 if __name__ == '__main__':
 
-    input_colors = get_colors(Image.open('imgs/vik.jpg'), 4)
-    output_colors = get_colors(Image.open('imgs/ponies.jpg'), 4)
+    input_colors = get_colors(Image.open('imgs/vik.jpg'), 256)
+    output_colors = get_colors(Image.open('imgs/ponies.jpg'), 256)
 
     input_colors, output_colors = get_preferences(input_colors, output_colors)
 
-    # print input_colors, output_colors
+    color_map = stable_marriage(input_colors, output_colors)
 
-    print stable_marriage(input_colors, output_colors)
+    for i in color_map:
+        color_map[i] = rgb(color_map[i])
+
+    print color_map
+
+    img = Image.open('imgs/vik.jpg').convert('P',
+        palette = Image.ADAPTIVE,
+        colors = 256
+    ).convert('RGB')
+
+    pixel_map = img.load()
+
+    new_img = Image.new(img.mode, img.size)
+    new_pixels = new_img.load()
+
+    for i in range(img.size[0]):
+        for j in range(img.size[1]):
+
+            old_hex = '#%02x%02x%02x' % pixel_map[i, j]
+
+            new_pixels[i, j] = color_map[old_hex]
+
+
+    new_img.show()
