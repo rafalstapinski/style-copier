@@ -35,47 +35,51 @@ def get_preferences(set_a, set_b):
 
 def stable_marriage(set_a, set_b):
 
-    set_a_prefs = {}
-    set_b_prefs = {}
+    a_prefs = {}
+    b_prefs = {}
 
     for a in set_a:
-        set_a_prefs[a] = set_a[a]['preferences']
+        a_prefs[a] = set_a[a]['preferences']
     for b in set_b:
-        set_b_prefs[b] = set_b[b]['preferences']
+        b_prefs[b] = set_b[b]['preferences']
 
-    guys = sorted(set_a_prefs.keys())
-    gals = sorted(set_b_prefs.keys())
+    a_list = sorted(a_prefs.keys())
+    b_list = sorted(b_prefs.keys())
 
-    guysfree = guys[:]
-    engaged  = {}
-    guyprefers2 = set_a_prefs
-    galprefers2 = set_b_prefs
-    while guysfree:
-        guy = guysfree.pop(0)
-        guyslist = guyprefers2[guy]
-        gal = guyslist.pop(0)
-        fiance = engaged.get(gal)
-        if not fiance:
-            # She's free
-            engaged[gal] = guy
-            # print("  %s and %s" % (guy, gal))
+    a_free = a_list[:]
+    matches  = {}
+
+    a_prefs_2 = a_prefs
+    b_prefs_2 = b_prefs
+
+    while a_free:
+
+        a = a_free.pop(0)
+        a_list = a_prefs_2[a]
+
+        b = a_list.pop(0)
+        match = matches.get(b)
+
+        if not match:
+            matches[b] = a
+
         else:
-            # The bounder proposes to an engaged lass!
-            galslist = galprefers2[gal]
-            if galslist.index(fiance) > galslist.index(guy):
-                # She prefers new guy
-                engaged[gal] = guy
-                # print("  %s dumped %s for %s" % (gal, fiance, guy))
-                if guyprefers2[fiance]:
-                    # Ex has more girls to try
-                    guysfree.append(fiance)
-            else:
-                # She is faithful to old fiance
-                if guyslist:
-                    # Look again
-                    guysfree.append(guy)
-    return engaged
 
+            b_list = b_prefs_2[b]
+
+            if b_list.index(match) > b_list.index(a):
+
+                matches[b] = a
+
+                if a_prefs_2[match]:
+                    a_free.append(match)
+
+            else:
+
+                if a_list:
+                    a_free.append(a)
+
+    return matches
 
 def get_colors(img, palette_size):
 
